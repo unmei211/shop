@@ -1,0 +1,15 @@
+version: '3.7'
+
+#jdbc:postgresql://$DB_HOST_URL:$DB_HOST_PORT/$DB_NAME
+services:
+  postgresql:
+    environment:
+      POSTGRES_DB: shop_lab
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    container_name: 'shop_lab'
+    image: 'postgres:9.6-alpine'
+    restart: 'always'
+    command: [ "postgres", "-c", "log_statement=all" ]
+    ports:
+      - '5466:5432'
