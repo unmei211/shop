@@ -13,6 +13,7 @@ public class CategoryExtractorCommand implements IExtractorCommand<CategoryModel
         try {
             String categoryID = resultSet.getString("id");
             String name = resultSet.getString("name");
+            resultSet.next();
             return new CategoryModel(categoryID, name);
         } catch (SQLException e) {
             return null;

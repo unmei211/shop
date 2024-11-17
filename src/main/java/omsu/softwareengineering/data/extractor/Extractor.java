@@ -1,5 +1,6 @@
 package omsu.softwareengineering.data.extractor;
 
+import omsu.softwareengineering.data.extractor.commands.IExtractorCommand;
 import omsu.softwareengineering.util.generation.IAbstractFactory;
 import omsu.softwareengineering.util.ioc.IOC;
 
@@ -12,6 +13,8 @@ public class Extractor {
 
     public Extractor() {
         this.fac = IOC.get("extractorCommandsFactory");
+
+        IOC.register("extractor", this);
     }
 
     public <T> T one(Class<T> clazz, PreparedStatement stmt) throws SQLException {
@@ -19,6 +22,7 @@ public class Extractor {
         if (!set.next()) {
             throw new SQLException();
         }
-        return fac.create(clazz).orElseThrow(SQLException::new);
+        IExtractorCommand<T> command = fac.<T, IExtractorCommand<T>>create(clazz).orElseThrow(SQLException::new);
+        return command.setSetExecute(set);
     }
 }

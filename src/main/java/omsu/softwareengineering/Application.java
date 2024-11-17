@@ -21,24 +21,22 @@ public class Application {
 
     private void iocConfiguration() {
         final ExtractorCommandsFactory extractorCommandsFactory = new ExtractorCommandsFactory();
-        IOC.register("extractorCommandsFactory", extractorCommandsFactory);
 
         final Extractor extractor = new Extractor();
-        IOC.register("extractor", extractor);
 
         final Connection connection = this.connection;
         IOC.register("connection", connection);
 
         final CategoryRepository repository = new CategoryRepository();
-        IOC.register("categoryRepository", repository);
     }
 
     public void run() {
         try (Connection connection = buildConnection(new IConnectionFactory())) {
             this.connection = connection;
+            iocConfiguration();
+            var rep = IOC.<CategoryRepository>get("categoryRepository");
         } catch (IConnectionFactoryException | SQLException e) {
             return;
         }
-        iocConfiguration();
     }
 }

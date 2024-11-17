@@ -17,6 +17,8 @@ public class CategoryRepository {
     public CategoryRepository() {
         this.connection = IOC.get("connection");
         this.extractor = IOC.get("extractor");
+
+        IOC.register("categoryRepository", this);
     }
 
     public CategoryModel findById(final String id) throws FindException {
