@@ -1,9 +1,8 @@
-package omsu.softwareengineering.data.extractor.commands;
+package omsu.softwareengineering.data.database.extractor.commands;
 
-import omsu.softwareengineering.data.extractor.Extractor;
+import omsu.softwareengineering.data.database.extractor.commands.models.CategoryExtractorCommand;
 import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.util.generation.IAbstractFactory;
-import omsu.softwareengineering.util.generation.ICommand;
 import omsu.softwareengineering.util.ioc.IOC;
 
 import java.util.HashMap;

@@ -1,4 +1,13 @@
 package omsu.softwareengineering.model.category;
 
-public record CategoryModel(String id, String name) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+@Builder
+public class CategoryModel {
+    private String id;
+    private String name;
 };

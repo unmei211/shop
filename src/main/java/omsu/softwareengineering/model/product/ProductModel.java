@@ -1,4 +1,14 @@
 package omsu.softwareengineering.model.product;
 
-public record ProductModel(String id, Long amount, String categoryID) {
+import lombok.*;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProductModel {
+    private String id;
+    private Long amount;
+    private String categoryID;
+    private String name;
 }

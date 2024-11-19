@@ -1,6 +1,6 @@
-package omsu.softwareengineering.data.extractor;
+package omsu.softwareengineering.data.database.extractor;
 
-import omsu.softwareengineering.data.extractor.commands.IExtractorCommand;
+import omsu.softwareengineering.data.database.extractor.commands.IExtractorCommand;
 import omsu.softwareengineering.util.generation.IAbstractFactory;
 import omsu.softwareengineering.util.ioc.IOC;
 

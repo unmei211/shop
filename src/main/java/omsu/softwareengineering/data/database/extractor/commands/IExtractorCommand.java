@@ -1,4 +1,4 @@
-package omsu.softwareengineering.data.extractor.commands;
+package omsu.softwareengineering.data.database.extractor.commands;
 
 import omsu.softwareengineering.util.generation.IResultingCommand;
 

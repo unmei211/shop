@@ -1,5 +1,6 @@
-package omsu.softwareengineering.data.extractor.commands;
+package omsu.softwareengineering.data.database.extractor.commands.models;
 
+import omsu.softwareengineering.data.database.extractor.commands.IExtractorCommand;
 import omsu.softwareengineering.model.category.CategoryModel;
 
 import java.sql.ResultSet;
