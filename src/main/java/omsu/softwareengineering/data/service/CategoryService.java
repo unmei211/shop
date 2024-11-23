@@ -2,7 +2,7 @@ package omsu.softwareengineering.data.service;
 
 import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.InsertException;
-import omsu.softwareengineering.data.repository.category.CategoryRepository;
+import omsu.softwareengineering.data.repository.repositories.category.CategoryRepository;
 import omsu.softwareengineering.model.category.CategoryEnum;
 import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.util.ioc.IOC;

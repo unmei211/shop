@@ -1,4 +1,4 @@
-package omsu.softwareengineering.model.product_discount;
+package omsu.softwareengineering.model.discountstrategy;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductDiscountModel {
+public class DiscountStrategyModel {
     private String id;
-    private String productID;
-    private String discountID;
+    private String description;
+    private String method;
 }

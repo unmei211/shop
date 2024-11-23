@@ -2,17 +2,17 @@ package omsu.softwareengineering.data.service;
 
 
 import omsu.softwareengineering.data.repository.FindException;
-import omsu.softwareengineering.data.repository.InsertException;
-import omsu.softwareengineering.data.repository.repositories.category.CategoryRepository;
+import omsu.softwareengineering.data.repository.repositories.price.PriceRepository;
 import omsu.softwareengineering.data.repository.repositories.product.ProductRepository;
+import omsu.softwareengineering.model.price.PriceModel;
 import omsu.softwareengineering.model.product.ProductModel;
 import omsu.softwareengineering.util.ioc.IOC;
 
-public class ProductService {
+public class PriceService {
     private final ProductRepository productRepository = IOC.get(ProductRepository.class);
-    private final CategoryRepository categoryRepository = IOC.get("categoryRepository");
+    private final PriceRepository priceRepository = IOC.get(PriceRepository.class);
 
-    public ProductService() {
+    public PriceService() {
         IOC.register(this);
     }
 
@@ -26,17 +26,8 @@ public class ProductService {
         return ProductModel;
     }
 
-    public void upsertProduct(final ProductModel productModel) {
-        try {
-            categoryRepository.findByID(productModel.getCategoryID());
-        } catch (FindException e) {
-            System.out.println("Can't find category");
-        }
-
-        try {
-            productRepository.insert(productModel);
-        } catch (InsertException e) {
-            System.out.println("Can't insert product");
-        }
+    public void changePrice(final PriceModel priceModel) {
+        productRepository.findByID(priceModel.getProductID());
+        priceRepository.upsert(priceModel);
     }
 }
