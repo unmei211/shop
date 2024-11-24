@@ -1,6 +1,8 @@
 package omsu.softwareengineering.data.service;
 
 
+import lombok.extern.slf4j.Slf4j;
+import omsu.softwareengineering.data.repository.DeleteException;
 import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.repositories.category.CategoryRepository;
@@ -8,6 +10,7 @@ import omsu.softwareengineering.data.repository.repositories.product.ProductRepo
 import omsu.softwareengineering.model.product.ProductModel;
 import omsu.softwareengineering.util.ioc.IOC;
 
+@Slf4j
 public class ProductService {
     private final ProductRepository productRepository = IOC.get(ProductRepository.class);
     private final CategoryRepository categoryRepository = IOC.get("categoryRepository");
@@ -26,6 +29,16 @@ public class ProductService {
         return ProductModel;
     }
 
+    public ProductModel getProductByName(final String name) {
+        ProductModel ProductModel = null;
+        try {
+            ProductModel = productRepository.findByName(name);
+        } catch (FindException e) {
+            System.out.println(this.getClass().getName() + " getProductByName: " + e.getMessage());
+        }
+        return ProductModel;
+    }
+
     public void upsertProduct(final ProductModel productModel) {
         try {
             categoryRepository.findByID(productModel.getCategoryID());
@@ -35,8 +48,26 @@ public class ProductService {
 
         try {
             productRepository.insert(productModel);
+            log.info("Product inserted successfully: productName = {}", productModel.getName());
         } catch (InsertException e) {
-            System.out.println("Can't insert product");
+            log.info("Product can't insert: productName = {}", productModel.getName());
+        }
+    }
+
+    public void deleteProductByName(final String productName) {
+        ProductModel productModel = null;
+        try {
+            productModel = productRepository.findByName(productName);
+        } catch (FindException e) {
+            log.info("Can't find product by name: {}", productName);
+            return;
+        }
+
+        try {
+            productRepository.deleteByID(productModel.getId());
+            log.info("Product deleted successfully: productName = {}", productModel.getName());
+        } catch (DeleteException e) {
+            log.info("Can't delete product: {}", e.getMessage());
         }
     }
 }

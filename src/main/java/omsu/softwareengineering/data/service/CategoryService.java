@@ -1,14 +1,18 @@
 package omsu.softwareengineering.data.service;
 
+import lombok.extern.slf4j.Slf4j;
 import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.repositories.category.CategoryRepository;
 import omsu.softwareengineering.model.category.CategoryEnum;
 import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.util.ioc.IOC;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
+@Slf4j
 public class CategoryService {
     private final CategoryRepository categoryRepository = IOC.get("categoryRepository");
 
@@ -17,8 +21,8 @@ public class CategoryService {
         Arrays.stream(CategoryEnum.values())
                 .map(Enum::toString)
                 .forEach((cat) -> {
-                    System.out.println(cat);
                     try {
+                        log.info("upsertCategoryByName: {}", cat);
                         upsertCategoryByName(cat);
                     } catch (InsertException e) {
                         return;
@@ -32,6 +36,17 @@ public class CategoryService {
             categoryModel = categoryRepository.findByID(id);
         } catch (FindException e) {
             System.out.println(this.getClass().getName() + " getCategoryByID: " + e.getMessage());
+        }
+        return categoryModel;
+    }
+
+    public CategoryModel getCategoryByName(final String name) {
+        CategoryModel categoryModel = null;
+        try {
+            categoryModel = categoryRepository.findByName(name);
+            log.info("getCategoryByName: {}", name);
+        } catch (FindException e) {
+            System.out.println(this.getClass().getName() + " getCategoryByName: " + e.getMessage());
         }
         return categoryModel;
     }

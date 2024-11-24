@@ -1,5 +1,6 @@
 package omsu.softwareengineering.data.repository.repositories.price;
 
+import lombok.extern.slf4j.Slf4j;
 import omsu.softwareengineering.data.database.extractor.Extractor;
 import omsu.softwareengineering.data.database.methods.MethodWrapperFactory;
 import omsu.softwareengineering.data.repository.FindException;
@@ -8,6 +9,7 @@ import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.UpdateException;
 import omsu.softwareengineering.data.repository.methods.IFindByIDMethod;
 import omsu.softwareengineering.model.price.PriceModel;
+import omsu.softwareengineering.model.product.ProductModel;
 import omsu.softwareengineering.util.generation.IDGen;
 import omsu.softwareengineering.util.ioc.IOC;
 import omsu.softwareengineering.validation.fields.NullValidate;
@@ -17,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+@Slf4j
 public class PriceRepository implements IRepository, IFindByIDMethod<PriceModel> {
     private final Connection connection;
     private final Extractor extractor;
@@ -40,16 +43,9 @@ public class PriceRepository implements IRepository, IFindByIDMethod<PriceModel>
     }
 
     public PriceModel findByProductID(final String productID) throws FindException {
-        final String sql = "SELECT id, price, start_date, end_date, product_id" +
-                " FROM price WHERE product_id = ? LIMIT 1";
-        try {
-            var stmt = connection.prepareStatement(sql);
-            stmt.setString(1, productID);
-            stmt.executeQuery();
-            return extractor.one(PriceModel.class, stmt);
-        } catch (SQLException e) {
-            throw new FindException(e.getMessage());
-        }
+        PriceModel priceModel = method.findBy("product_id", productID, PriceModel.class, table);
+        log.info("priceModel found by product id {}", productID);
+        return priceModel;
     }
 
     public void insert(final PriceModel priceModel) throws InsertException {
@@ -85,6 +81,7 @@ public class PriceRepository implements IRepository, IFindByIDMethod<PriceModel>
             // Возможно вынести логику в сервис
             stmt.setTimestamp(4, Timestamp.valueOf(currentTime));
             stmt.setString(5, priceModel.getProductID());
+            stmt.setString(6, priceModel.getId());
             stmt.execute();
         } catch (SQLException e) {
             throw new UpdateException(e.getMessage());
@@ -92,10 +89,24 @@ public class PriceRepository implements IRepository, IFindByIDMethod<PriceModel>
     }
 
     public void upsert(final PriceModel model) throws UpdateException {
-        if (model.getId() == null) {
+        Boolean priceForProductExists = true;
+        PriceModel foundedPriceModel = null;
+        try {
+            foundedPriceModel = findByProductID(model.getProductID());
+        } catch (FindException e) {
+            priceForProductExists = false;
+        }
+
+        if (model.getId() == null && !priceForProductExists) {
+            log.info("Price model id is null");
             insert(model);
+            log.info("Price model inserted by product id {}", model.getProductID());
         } else {
+            if (model.getId() == null) {
+                model.setId(foundedPriceModel.getId());
+            }
             update(model);
+            log.info("Price model updated by product id {}", model.getProductID());
         }
     }
 }

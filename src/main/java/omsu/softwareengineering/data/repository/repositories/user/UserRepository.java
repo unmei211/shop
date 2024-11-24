@@ -1,5 +1,6 @@
 package omsu.softwareengineering.data.repository.repositories.user;
 
+import lombok.extern.slf4j.Slf4j;
 import omsu.softwareengineering.data.database.extractor.Extractor;
 import omsu.softwareengineering.data.database.methods.MethodWrapperFactory;
 import omsu.softwareengineering.data.repository.FindException;
@@ -8,6 +9,7 @@ import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.UpdateException;
 import omsu.softwareengineering.data.repository.methods.IFindByIDMethod;
 import omsu.softwareengineering.model.price.PriceModel;
+import omsu.softwareengineering.model.product.ProductModel;
 import omsu.softwareengineering.model.user.UserModel;
 import omsu.softwareengineering.util.generation.IDGen;
 import omsu.softwareengineering.util.ioc.IOC;
@@ -18,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+@Slf4j
 public class UserRepository implements IRepository, IFindByIDMethod<UserModel> {
     private final Connection connection;
     private final Extractor extractor;
@@ -40,17 +43,16 @@ public class UserRepository implements IRepository, IFindByIDMethod<UserModel> {
                 .findByID(id);
     }
 
+    public UserModel findByEmail(String email) throws FindException {
+        UserModel model = method.findBy("email", email, UserModel.class, targetTable);
+        log.info("user found by email {}", email);
+        return model;
+    }
+
     public UserModel findByName(final String name) throws FindException {
-        final String sql = "SELECT id, name, email" +
-                " FROM users WHERE name = ? LIMIT 1";
-        try {
-            var stmt = connection.prepareStatement(sql);
-            stmt.setString(1, name);
-            stmt.executeQuery();
-            return extractor.one(UserModel.class, stmt);
-        } catch (SQLException e) {
-            throw new FindException(e.getMessage());
-        }
+        UserModel model = method.findBy("name", name, UserModel.class, targetTable);
+        log.info("user found by name {}", name);
+        return model;
     }
 
     public void insert(final UserModel userModel) throws InsertException {

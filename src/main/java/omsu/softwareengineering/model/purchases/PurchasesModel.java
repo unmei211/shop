@@ -1,11 +1,21 @@
 package omsu.softwareengineering.model.purchases;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.sql.Timestamp;
 
-public record PurchasesModel(String id,
-                             String productID,
-                             String userID,
-                             String paymentTypeID,
-                             Timestamp date,
-                             String purchaseStatusID) {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PurchasesModel {
+    private String id;
+    private String productID;
+    private String userID;
+    private String paymentTypeID;
+    private Timestamp date;
+    private String purchaseStatusID;
 }

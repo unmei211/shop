@@ -1,5 +1,6 @@
 package omsu.softwareengineering.data.service;
 
+import lombok.extern.slf4j.Slf4j;
 import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.repositories.paymenttype.PaymentTypeRepository;
@@ -11,6 +12,7 @@ import omsu.softwareengineering.util.ioc.IOC;
 
 import java.util.Arrays;
 
+@Slf4j
 public class PaymentTypeService {
     private final PaymentTypeRepository paymentTypeRepository = IOC.get(PaymentTypeRepository.class);
 
@@ -34,6 +36,17 @@ public class PaymentTypeService {
             paymentTypeModel = paymentTypeRepository.findByID(id);
         } catch (FindException e) {
             System.out.println(this.getClass().getName() + " getPaymentTypeByID: " + e.getMessage());
+        }
+        return paymentTypeModel;
+    }
+
+    public PaymentTypeModel getPaymentTypeByType(final String type) {
+        PaymentTypeModel paymentTypeModel = null;
+        try {
+            paymentTypeModel = paymentTypeRepository.findByType(type);
+            log.info("getPaymentTypeByType: {}", paymentTypeModel);
+        } catch (FindException e) {
+            System.out.println(this.getClass().getName() + " getPaymentTypeByType: " + e.getMessage());
         }
         return paymentTypeModel;
     }

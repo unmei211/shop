@@ -1,5 +1,6 @@
 package omsu.softwareengineering;
 
+import omsu.softwareengineering.client.IClient;
 import omsu.softwareengineering.data.database.IConnectionFactory;
 import omsu.softwareengineering.data.database.IConnectionFactoryException;
 import omsu.softwareengineering.data.database.extractor.Extractor;
@@ -12,6 +13,7 @@ import omsu.softwareengineering.data.repository.repositories.paymenttype.Payment
 import omsu.softwareengineering.data.repository.repositories.price.PriceRepository;
 import omsu.softwareengineering.data.repository.repositories.product.ProductRepository;
 import omsu.softwareengineering.data.repository.repositories.product_discount.ProductDiscountRepository;
+import omsu.softwareengineering.data.repository.repositories.purchases.PurchasesRepository;
 import omsu.softwareengineering.data.repository.repositories.purchasestatus.PurchaseStatusRepository;
 import omsu.softwareengineering.data.repository.repositories.user.UserRepository;
 import omsu.softwareengineering.data.service.*;
@@ -50,6 +52,7 @@ public class Application {
         final DiscountStrategyRepository discountStrategyRepository = new DiscountStrategyRepository();
         final DiscountRepository discountRepository = new DiscountRepository();
         final ProductDiscountRepository productDiscountRepository = new ProductDiscountRepository();
+        final PurchasesRepository purchasesRepository = new PurchasesRepository();
     }
 
     private void serviceConfiguration() {
@@ -62,6 +65,7 @@ public class Application {
         final DiscountStrategyService discountStrategyService = new DiscountStrategyService();
         final DiscountService discountService = new DiscountService();
         final ProductDiscountService productDiscountService = new ProductDiscountService();
+        final PurchasesService purchasesService = new PurchasesService();
     }
 
     private void iocConfiguration() {
@@ -76,7 +80,8 @@ public class Application {
         try (Connection connection = buildConnection(new IConnectionFactory())) {
             this.connection = connection;
             iocConfiguration();
-            IOC.get(CategoryService.class).getCategoryByID("myid");
+            IOC.<IClient>get("client").connectApi();
+            IOC.<IClient>get("client").handle();
         } catch (IConnectionFactoryException | SQLException e) {
             return;
         }

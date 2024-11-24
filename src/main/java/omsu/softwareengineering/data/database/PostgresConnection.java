@@ -1,10 +1,13 @@
 package omsu.softwareengineering.data.database;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Optional;
 
+@Slf4j
 public class PostgresConnection implements IConnector {
     private Connection pool;
     private final String url;
@@ -25,7 +28,7 @@ public class PostgresConnection implements IConnector {
         try {
             Connection connection = DriverManager.getConnection(url, user, password);
             this.pool = connection;
-            System.out.println("Postgres Connected!");
+            log.info("Connected to database");
             return Optional.of(connection);
         } catch (SQLException ex) {
             System.out.println("Failed Postgres Connect");

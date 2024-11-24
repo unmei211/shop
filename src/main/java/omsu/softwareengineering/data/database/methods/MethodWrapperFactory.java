@@ -16,4 +16,14 @@ public class MethodWrapperFactory {
     public <T> FindByIDMethodWrapper<T> findByIDMethodWrapper(String table, Class<T> clazz) {
         return new FindByIDMethodWrapper<T>(table, connection, extractor, clazz);
     }
+
+    public <T, A> T findBy(String fieldName, A value, Class<T> modelClazz, String table) {
+        return new FindByMethodWrapper(connection, extractor)
+                .findBy(fieldName, value, modelClazz, table);
+    }
+
+    public <T, A> T findByDisableable(String fieldName, A value, Class<T> modelClazz, String table) {
+        return new FindByDisableableMethodWrapper(connection, extractor)
+                .findBy(fieldName, value, modelClazz, table);
+    }
 }

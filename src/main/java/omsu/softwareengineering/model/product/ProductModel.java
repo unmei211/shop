@@ -11,4 +11,5 @@ public class ProductModel {
     private Long amount;
     private String categoryID;
     private String name;
+    private Boolean deleted;
 }

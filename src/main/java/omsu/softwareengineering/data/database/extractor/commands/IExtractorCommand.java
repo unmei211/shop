@@ -1,6 +1,6 @@
 package omsu.softwareengineering.data.database.extractor.commands;
 
-import omsu.softwareengineering.util.generation.IResultingCommand;
+import omsu.softwareengineering.util.behavior.IResultingCommand;
 
 import java.sql.ResultSet;
 
