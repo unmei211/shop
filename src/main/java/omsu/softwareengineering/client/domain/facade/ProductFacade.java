@@ -1,9 +1,8 @@
 package omsu.softwareengineering.client.domain.facade;
 
 import lombok.extern.slf4j.Slf4j;
-import omsu.softwareengineering.data.service.CategoryService;
-import omsu.softwareengineering.data.service.ProductService;
-import omsu.softwareengineering.data.service.UserService;
+import omsu.softwareengineering.service.CategoryService;
+import omsu.softwareengineering.service.ProductService;
 import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.model.product.ProductModel;
 import omsu.softwareengineering.util.ioc.IOC;
@@ -25,6 +24,7 @@ public class ProductFacade implements IFacade {
                 .name(productName)
                 .amount(amount)
                 .categoryID(categoryModel.getId())
+                .deleted(false)
                 .build()
         );
     }

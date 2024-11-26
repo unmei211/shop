@@ -1,9 +1,8 @@
 package omsu.softwareengineering.client.domain.facade;
 
 import lombok.extern.slf4j.Slf4j;
-import omsu.softwareengineering.data.service.PriceService;
-import omsu.softwareengineering.data.service.ProductService;
-import omsu.softwareengineering.data.service.UserService;
+import omsu.softwareengineering.service.PriceService;
+import omsu.softwareengineering.service.ProductService;
 import omsu.softwareengineering.model.price.PriceModel;
 import omsu.softwareengineering.model.product.ProductModel;
 import omsu.softwareengineering.util.ioc.IOC;

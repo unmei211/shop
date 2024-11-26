@@ -1,4 +1,4 @@
-package omsu.softwareengineering.data.service;
+package omsu.softwareengineering.service;
 
 import lombok.extern.slf4j.Slf4j;
 import omsu.softwareengineering.data.repository.FindException;
@@ -7,10 +7,8 @@ import omsu.softwareengineering.data.repository.repositories.category.CategoryRe
 import omsu.softwareengineering.model.category.CategoryEnum;
 import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.util.ioc.IOC;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 @Slf4j
 public class CategoryService {

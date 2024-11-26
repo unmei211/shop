@@ -1,10 +1,9 @@
-package omsu.softwareengineering.data.service;
+package omsu.softwareengineering.service;
 
 
 import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.repositories.purchasestatus.PurchaseStatusRepository;
-import omsu.softwareengineering.model.paymenttype.PaymentTypeEnum;
 import omsu.softwareengineering.model.purchasestatus.PurchaseStatusEnum;
 import omsu.softwareengineering.model.purchasestatus.PurchaseStatusModel;
 import omsu.softwareengineering.util.ioc.IOC;

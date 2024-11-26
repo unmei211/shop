@@ -1,11 +1,7 @@
 package omsu.softwareengineering.client.domain.facade;
 
 import lombok.extern.slf4j.Slf4j;
-import omsu.softwareengineering.data.service.CategoryService;
-import omsu.softwareengineering.data.service.ProductService;
-import omsu.softwareengineering.data.service.UserService;
-import omsu.softwareengineering.model.category.CategoryModel;
-import omsu.softwareengineering.model.product.ProductModel;
+import omsu.softwareengineering.service.UserService;
 import omsu.softwareengineering.util.ioc.IOC;
 
 @Slf4j

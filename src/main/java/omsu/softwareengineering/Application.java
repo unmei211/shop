@@ -16,7 +16,7 @@ import omsu.softwareengineering.data.repository.repositories.product_discount.Pr
 import omsu.softwareengineering.data.repository.repositories.purchases.PurchasesRepository;
 import omsu.softwareengineering.data.repository.repositories.purchasestatus.PurchaseStatusRepository;
 import omsu.softwareengineering.data.repository.repositories.user.UserRepository;
-import omsu.softwareengineering.data.service.*;
+import omsu.softwareengineering.service.*;
 import omsu.softwareengineering.util.generation.IFactory;
 import omsu.softwareengineering.util.ioc.IOC;
 

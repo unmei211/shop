@@ -1,7 +1,8 @@
-package omsu.softwareengineering.data.service;
+package omsu.softwareengineering.service;
 
 
 import lombok.extern.slf4j.Slf4j;
+import omsu.softwareengineering.data.repository.DeleteException;
 import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.repositories.price.PriceRepository;
 import omsu.softwareengineering.data.repository.repositories.product.ProductRepository;
@@ -40,8 +41,19 @@ public class PriceService {
         }
     }
 
+    public void deleteProductPricesByProductName(final String name) {
+        try {
+            ProductModel model = productRepository.findByName(name);
+            String productID = model.getId();
+            productRepository.deleteProductPrices(productID);
+        } catch (FindException | DeleteException e) {
+            System.out.println("Can't delete prices or not found product");
+        }
+    }
+
     public void changePrice(final PriceModel priceModel) {
-        productRepository.findByID(priceModel.getProductID());
+        ProductModel productModel = productRepository.findByID(priceModel.getProductID());
+        deleteProductPricesByProductName(productModel.getName());
         priceRepository.upsert(priceModel);
         log.info("Change Price of {} to {}", priceModel.getProductID(), priceModel.getPrice());
     }

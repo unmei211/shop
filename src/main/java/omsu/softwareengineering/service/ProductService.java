@@ -1,4 +1,4 @@
-package omsu.softwareengineering.data.service;
+package omsu.softwareengineering.service;
 
 
 import lombok.extern.slf4j.Slf4j;

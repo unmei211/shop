@@ -4,10 +4,7 @@ import omsu.softwareengineering.client.IClient;
 import omsu.softwareengineering.client.domain.facade.PriceFacade;
 import omsu.softwareengineering.client.domain.facade.ProductFacade;
 import omsu.softwareengineering.client.domain.facade.UserFacade;
-import omsu.softwareengineering.data.service.*;
-import omsu.softwareengineering.model.category.CategoryEnum;
-import omsu.softwareengineering.model.category.CategoryModel;
-import omsu.softwareengineering.model.product.ProductModel;
+import omsu.softwareengineering.service.*;
 import omsu.softwareengineering.util.ioc.IOC;
 
 public class SimpleClient implements IClient {
@@ -54,6 +51,8 @@ public class SimpleClient implements IClient {
     public void handle() {
         initializeFacades();
         productFacade.addProduct("tech", "Keyboard", 200L);
+        productFacade.addProduct("tech", "Computer", 200L);
+
         productFacade.deleteProduct("Keyboard");
 
         userFacade.addUser("unmei", "unmei@gmail.com");

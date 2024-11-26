@@ -37,6 +37,18 @@ public class ProductRepository implements IRepository {
         return productModel;
     }
 
+    public void deleteProductPrices(String productID) throws DeleteException {
+        final String sql = "DELETE FROM price WHERE productID = ?";
+
+        try {
+            var stmt = connection.prepareStatement(sql);
+            stmt.setString(1, productID);
+            stmt.execute();
+        } catch (SQLException e) {
+            System.out.println("Can't delete productPrices");
+        }
+    }
+
     public void deleteByID(String id) throws DeleteException {
         final String sql = "UPDATE product SET deleted = true WHERE id = ?";
 
@@ -52,7 +64,7 @@ public class ProductRepository implements IRepository {
     }
 
     public void insert(ProductModel product) throws InsertException {
-        final String sql = "INSERT INTO product (id, amount, category_id, name) VALUES (?, ?, ?, ?)";
+        final String sql = "INSERT INTO product (id, amount, category_id, name, deleted) VALUES (?, ?, ?, ?, ?)";
 
         try {
             var stmt = connection.prepareStatement(sql);
@@ -60,6 +72,7 @@ public class ProductRepository implements IRepository {
             stmt.setLong(2, product.getAmount());
             stmt.setString(3, product.getCategoryID());
             stmt.setString(4, product.getName());
+            stmt.setBoolean(5, product.getDeleted());
             stmt.execute();
         } catch (SQLException e) {
             throw new InsertException(e.getMessage());

@@ -1,11 +1,9 @@
-package omsu.softwareengineering.data.service;
+package omsu.softwareengineering.service;
 
 import lombok.extern.slf4j.Slf4j;
 import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.repositories.paymenttype.PaymentTypeRepository;
-import omsu.softwareengineering.model.category.CategoryEnum;
-import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.model.paymenttype.PaymentTypeEnum;
 import omsu.softwareengineering.model.paymenttype.PaymentTypeModel;
 import omsu.softwareengineering.util.ioc.IOC;

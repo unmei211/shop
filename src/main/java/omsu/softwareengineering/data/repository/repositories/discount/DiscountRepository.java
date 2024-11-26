@@ -36,4 +36,28 @@ public class DiscountRepository implements IRepository, IFindByIDMethod<Discount
                 .findByIDMethodWrapper(targetTable, DiscountModel.class)
                 .findByID(id);
     }
+
+    public DiscountModel findByDiscountStrategyID(String discountStrategyID) throws FindException {
+        return method
+                .findBy("discount_strategy_id", discountStrategyID, DiscountModel.class, targetTable);
+    }
+
+    public void insert(DiscountModel model) throws InsertException {
+        final String sql = "INSERT INTO discount " +
+                "(id, description, start_date, end_date, enabled, discount_strategy_id)" +
+                " VALUES (?, ?, ?, ?, ?, ?)";
+
+        try {
+            var stmt = connection.prepareStatement(sql);
+            stmt.setString(1, IDGen.gen());
+            stmt.setString(2, model.getDescription());
+            stmt.setTimestamp(3, model.getStartDate());
+            stmt.setTimestamp(4, model.getEndDate());
+            stmt.setBoolean(5, model.getEnabled());
+            stmt.setString(6, model.getDiscountStrategyID());
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new InsertException(e.getMessage());
+        }
+    }
 }
