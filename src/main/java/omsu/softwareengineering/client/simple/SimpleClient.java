@@ -1,9 +1,8 @@
 package omsu.softwareengineering.client.simple;
 
 import omsu.softwareengineering.client.IClient;
-import omsu.softwareengineering.client.domain.facade.PriceFacade;
-import omsu.softwareengineering.client.domain.facade.ProductFacade;
-import omsu.softwareengineering.client.domain.facade.UserFacade;
+import omsu.softwareengineering.client.domain.facade.*;
+import omsu.softwareengineering.model.discountstrategy.DiscountStrategyEnum;
 import omsu.softwareengineering.service.*;
 import omsu.softwareengineering.util.ioc.IOC;
 
@@ -21,6 +20,8 @@ public class SimpleClient implements IClient {
     private ProductFacade productFacade;
     private UserFacade userFacade;
     private PriceFacade priceFacade;
+    private DiscountFacade discountFacade;
+    private ProductDiscountFacade productDiscountFacade;
 
     @Override
     public void connectApi() {
@@ -34,7 +35,6 @@ public class SimpleClient implements IClient {
         discountApi = IOC.get(DiscountService.class);
         productDiscountApi = IOC.get(ProductDiscountService.class);
         purchasesApi = IOC.get(PurchasesService.class);
-
     }
 
     public SimpleClient() {
@@ -45,6 +45,8 @@ public class SimpleClient implements IClient {
         productFacade = new ProductFacade();
         userFacade = new UserFacade();
         priceFacade = new PriceFacade();
+        discountFacade = new DiscountFacade();
+        productDiscountFacade = new ProductDiscountFacade();
     }
 
     @Override
@@ -60,5 +62,11 @@ public class SimpleClient implements IClient {
 
         priceFacade.changePriceByProductName("Computer", 2000L);
         priceFacade.getPriceByProductName("Computer");
+
+        discountFacade.initDiscount(DiscountStrategyEnum.Percentage.name(), "Percentage sell");
+        discountFacade.initDiscount(DiscountStrategyEnum.RandomRange.name(), "RandomRange sell");
+        discountFacade.initDiscount(DiscountStrategyEnum.Quantitative.name(), "Quantitative sell");
+
+        productDiscountFacade.addDiscountForProduct("Keyboard", DiscountStrategyEnum.RandomRange.name());
     }
 }

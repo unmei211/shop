@@ -40,7 +40,7 @@ public class ProductDiscountService {
         ProductModel productModel = productRepository.findByName(productName);
         ProductDiscountModel productDiscountModel = null;
         try {
-            productDiscountModel = getProductDiscountByID(productModel.getId());
+            productDiscountModel = getProductDiscountByProductID(productModel.getId());
         } catch (FindException e) {
             log.info("Not found product discount with productID: " + productModel.getId());
         }

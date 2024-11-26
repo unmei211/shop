@@ -31,9 +31,23 @@ public class DiscountService {
         return model;
     }
 
+    public DiscountModel getDiscountByStrategyID(final String strategyID) {
+        try {
+            return discountRepository.findByDiscountStrategyID(strategyID);
+        } catch (FindException e) {
+            log.info("Can't found strategy via id: {}", strategyID);
+            return null;
+        }
+    }
+
     public void initDiscount(final DiscountModel discountModel) {
         if (discountStrategyRepository.findByID(discountModel.getDiscountStrategyID()) == null) {
             log.info("Can't found discount strategy");
+            return;
+        }
+
+        if (discountRepository.findByDiscountStrategyID(discountModel.getDiscountStrategyID()) != null) {
+            log.info("Discount via this strategy already exists");
             return;
         }
 
