@@ -5,10 +5,7 @@ import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.model.discount.DiscountModel;
 import omsu.softwareengineering.model.discountstrategy.DiscountStrategyModel;
 import omsu.softwareengineering.model.product.ProductModel;
-import omsu.softwareengineering.service.CategoryService;
-import omsu.softwareengineering.service.DiscountService;
-import omsu.softwareengineering.service.DiscountStrategyService;
-import omsu.softwareengineering.service.ProductService;
+import omsu.softwareengineering.service.*;
 import omsu.softwareengineering.util.ioc.IOC;
 
 @Slf4j
@@ -16,6 +13,7 @@ public class ProductDiscountFacade implements IFacade {
     private ProductService productApi = IOC.get(ProductService.class);
     private DiscountStrategyService discountStrategyApi = IOC.get(DiscountStrategyService.class);
     private DiscountService discountApi = IOC.get(DiscountService.class);
+    private ProductDiscountService productDiscountApi = IOC.get(ProductDiscountService.class);
 
     public ProductDiscountFacade() {
         IOC.register(this);
@@ -23,8 +21,6 @@ public class ProductDiscountFacade implements IFacade {
 
     public void addDiscountForProduct(String productName, String strategyMethodName) {
         DiscountStrategyModel discountStrategyModel = discountStrategyApi.getStrategyByName(strategyMethodName);
-        DiscountModel discountModel = discountApi.getDiscountByStrategyID(discountStrategyModel.getId());
-        discountApi.initDiscount(DiscountModel.builder()
-                ..build());
+        productDiscountApi.bundleProductViaDiscount(productName, discountStrategyModel.getId());
     }
 }

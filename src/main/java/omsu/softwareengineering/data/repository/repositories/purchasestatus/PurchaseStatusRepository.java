@@ -6,6 +6,7 @@ import omsu.softwareengineering.data.repository.FindException;
 import omsu.softwareengineering.data.repository.IRepository;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.methods.IFindByIDMethod;
+import omsu.softwareengineering.model.purchases.PurchasesModel;
 import omsu.softwareengineering.model.purchasestatus.PurchaseStatusModel;
 import omsu.softwareengineering.util.generation.IDGen;
 import omsu.softwareengineering.util.ioc.IOC;
@@ -27,6 +28,11 @@ public class PurchaseStatusRepository implements IRepository, IFindByIDMethod<Pu
     public PurchaseStatusModel findByID(String id) throws FindException {
         NullValidate.validOrThrow(new FindException("Arguments is null"), id);
         return method.findByIDMethodWrapper(table, PurchaseStatusModel.class).findByID(id);
+    }
+
+    public PurchaseStatusModel findByStatus(String status) throws FindException {
+        return method
+                .findBy("status", status, PurchaseStatusModel.class, table);
     }
 
     public void insert(PurchaseStatusModel model) throws InsertException {

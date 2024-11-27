@@ -20,8 +20,9 @@ public class PurchasesExtractorCommand implements IExtractorCommand<PurchasesMod
             String paymentTypeID = resultSet.getString("payment_type_id");
             Timestamp date = resultSet.getTimestamp("date");
             String purchaseStatusID = resultSet.getString("purchase_status_id");
+            Long price = resultSet.getLong("price");
             resultSet.next();
-            return new PurchasesModel(purchasesID, productID, userID, paymentTypeID, date, purchaseStatusID);
+            return new PurchasesModel(purchasesID, productID, userID, paymentTypeID, date, purchaseStatusID, price);
         } catch (SQLException e) {
             return null;
         }

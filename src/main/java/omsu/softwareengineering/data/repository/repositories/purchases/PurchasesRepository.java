@@ -7,6 +7,7 @@ import omsu.softwareengineering.data.repository.IRepository;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.UpdateException;
 import omsu.softwareengineering.data.repository.methods.IFindByIDMethod;
+import omsu.softwareengineering.model.category.CategoryModel;
 import omsu.softwareengineering.model.price.PriceModel;
 import omsu.softwareengineering.model.purchases.PurchasesModel;
 import omsu.softwareengineering.util.generation.IDGen;
@@ -38,5 +39,24 @@ public class PurchasesRepository implements IRepository, IFindByIDMethod<Purchas
         return method
                 .findByIDMethodWrapper(targetTable, PurchasesModel.class)
                 .findByID(id);
+    }
+
+    public void insert(PurchasesModel purchasesModel) throws InsertException {
+        final String sql = "INSERT INTO purchases (id, price,product_id, date, payment_type_id, purchase_status_id, user_id) " +
+                "VALUES (?, ?, ?, ?, ?,?,?)";
+
+        try {
+            var stmt = connection.prepareStatement(sql);
+            stmt.setString(1, IDGen.gen());
+            stmt.setLong(2, purchasesModel.getPrice());
+            stmt.setString(3, purchasesModel.getProductID());
+            stmt.setTimestamp(4, purchasesModel.getDate());
+            stmt.setString(5, purchasesModel.getPaymentTypeID());
+            stmt.setString(6, purchasesModel.getPurchaseStatusID());
+            stmt.setString(7, purchasesModel.getUserID());
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new InsertException(e.getMessage());
+        }
     }
 }

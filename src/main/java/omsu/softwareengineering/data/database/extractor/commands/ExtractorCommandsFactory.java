@@ -8,6 +8,7 @@ import omsu.softwareengineering.model.paymenttype.PaymentTypeModel;
 import omsu.softwareengineering.model.price.PriceModel;
 import omsu.softwareengineering.model.product.ProductModel;
 import omsu.softwareengineering.model.product_discount.ProductDiscountModel;
+import omsu.softwareengineering.model.purchasestatus.PurchaseStatusModel;
 import omsu.softwareengineering.model.user.UserModel;
 import omsu.softwareengineering.util.generation.IAbstractFactory;
 import omsu.softwareengineering.util.ioc.IOC;
@@ -29,6 +30,7 @@ public class ExtractorCommandsFactory implements IAbstractFactory {
         commands.put(PaymentTypeModel.class, PaymentTypeExtractorCommand::new);
         commands.put(ProductDiscountModel.class, ProductDiscountExtractorCommand::new);
         commands.put(UserModel.class, UserExtractorCommand::new);
+        commands.put(PurchaseStatusModel.class, PurchaseStatusExtractorCommand::new);
     }
 
     @Override

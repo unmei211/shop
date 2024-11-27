@@ -77,3 +77,5 @@ CREATE TABLE IF NOT EXISTS PURCHASES
     date               timestamp not null,
     purchase_status_id varchar   not null references PURCHASESTATUS (id)
 );
+
+ALTER TABLE purchases ADD COLUMN price bigint NOT NULL default 0

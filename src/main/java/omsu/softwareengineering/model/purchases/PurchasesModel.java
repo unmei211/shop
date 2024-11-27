@@ -18,4 +18,5 @@ public class PurchasesModel {
     private String paymentTypeID;
     private Timestamp date;
     private String purchaseStatusID;
+    private Long price;
 }

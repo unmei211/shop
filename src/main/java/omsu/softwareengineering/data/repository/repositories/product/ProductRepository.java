@@ -50,7 +50,7 @@ public class ProductRepository implements IRepository {
     }
 
     public void deleteByID(String id) throws DeleteException {
-        final String sql = "UPDATE product SET deleted = true WHERE id = ?";
+        final String sql = "DELETE FROM product WHERE id = ?";
 
         try {
             var stmt = connection.prepareStatement(sql);

@@ -47,6 +47,14 @@ public class ProductService {
         }
 
         try {
+            if (productRepository.findByName(productModel.getName()) != null) {
+                log.info("Product with name " + productModel.getName() + " already exists");
+                return;
+            }
+        } catch (FindException e) {
+            System.out.println("Can't find product with name " + productModel.getName());
+        }
+        try {
             productRepository.insert(productModel);
             log.info("Product inserted successfully: productName = {}", productModel.getName());
         } catch (InsertException e) {
