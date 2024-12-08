@@ -15,6 +15,11 @@ import omsu.softwareengineering.validation.fields.NullValidate;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Репозиторий для работы с продуктами в базе данных.
+ * <p>Реализует методы для поиска, добавления, удаления и извлечения информации о продуктах.</p>
+ * <p>Работает с таблицей "product" в базе данных.</p>
+ */
 @Slf4j
 public class ProductRepository implements IRepository {
     private final Connection connection = IOC.get("connection");
@@ -22,21 +27,45 @@ public class ProductRepository implements IRepository {
     private final MethodWrapperFactory method = IOC.get(MethodWrapperFactory.class);
     private final String table = "product";
 
+    /**
+     * Конструктор класса, инициализирует соединение с базой данных и необходимые сервисы.
+     * Регистрирует репозиторий в контейнере IoC.
+     */
     public ProductRepository() {
         IOC.register(this);
     }
 
+    /**
+     * Находит продукт по ID.
+     *
+     * @param id Идентификатор продукта.
+     * @return Модель продукта.
+     * @throws FindException Если продукт с таким ID не найден или произошла ошибка при выполнении запроса.
+     */
     public ProductModel findByID(String id) throws FindException {
         NullValidate.validOrThrow(new FindException("Arguments is null"), id);
         return method.findByIDMethodWrapper(table, ProductModel.class).findByID(id);
     }
 
+    /**
+     * Находит продукт по названию.
+     *
+     * @param name Название продукта.
+     * @return Модель продукта.
+     * @throws FindException Если продукт с таким названием не найден.
+     */
     public ProductModel findByName(String name) throws FindException {
         ProductModel productModel = method.findByDisableable("name", name, ProductModel.class, table);
         log.info("productModel found by name {}", productModel.getName());
         return productModel;
     }
 
+    /**
+     * Удаляет все цены для указанного продукта.
+     *
+     * @param productID Идентификатор продукта.
+     * @throws DeleteException Если не удалось удалить цены.
+     */
     public void deleteProductPrices(String productID) throws DeleteException {
         final String sql = "DELETE FROM price WHERE productID = ?";
 
@@ -49,6 +78,12 @@ public class ProductRepository implements IRepository {
         }
     }
 
+    /**
+     * Удаляет продукт по ID.
+     *
+     * @param id Идентификатор продукта.
+     * @throws DeleteException Если произошла ошибка при удалении продукта.
+     */
     public void deleteByID(String id) throws DeleteException {
         final String sql = "DELETE FROM product WHERE id = ?";
 
@@ -63,6 +98,12 @@ public class ProductRepository implements IRepository {
         }
     }
 
+    /**
+     * Добавляет новый продукт в базу данных.
+     *
+     * @param product Модель продукта.
+     * @throws InsertException Если произошла ошибка при добавлении данных в базу.
+     */
     public void insert(ProductModel product) throws InsertException {
         final String sql = "INSERT INTO product (id, amount, category_id, name, deleted) VALUES (?, ?, ?, ?, ?)";
 

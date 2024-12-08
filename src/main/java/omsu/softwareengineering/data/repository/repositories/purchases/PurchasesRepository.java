@@ -7,8 +7,6 @@ import omsu.softwareengineering.data.repository.IRepository;
 import omsu.softwareengineering.data.repository.InsertException;
 import omsu.softwareengineering.data.repository.UpdateException;
 import omsu.softwareengineering.data.repository.methods.IFindByIDMethod;
-import omsu.softwareengineering.model.category.CategoryModel;
-import omsu.softwareengineering.model.price.PriceModel;
 import omsu.softwareengineering.model.purchases.PurchasesModel;
 import omsu.softwareengineering.util.generation.IDGen;
 import omsu.softwareengineering.util.ioc.IOC;
@@ -16,15 +14,21 @@ import omsu.softwareengineering.validation.fields.NullValidate;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
+/**
+ * Репозиторий для управления покупками в базе данных.
+ * <p>Предоставляет методы для поиска, вставки и обновления записей о покупках.</p>
+ * <p>Работает с таблицей "purchases" в базе данных.</p>
+ */
 public class PurchasesRepository implements IRepository, IFindByIDMethod<PurchasesModel> {
     private final Connection connection;
     private final Extractor extractor;
     private final MethodWrapperFactory method;
     private final String targetTable = "purchases";
 
+    /**
+     * Конструктор класса, инициализирующий зависимости через IOC-контейнер.
+     */
     public PurchasesRepository() {
         this.connection = IOC.get("connection");
         this.extractor = IOC.get("extractor");
@@ -32,6 +36,13 @@ public class PurchasesRepository implements IRepository, IFindByIDMethod<Purchas
         IOC.register(this);
     }
 
+    /**
+     * Находит запись о покупке по ее идентификатору.
+     *
+     * @param id идентификатор покупки.
+     * @return модель покупки {@link PurchasesModel}.
+     * @throws FindException если запись не найдена или произошла ошибка в базе данных.
+     */
     @Override
     public PurchasesModel findByID(String id) throws FindException {
         NullValidate.validOrThrow(new FindException("Arguments is null"), id);
@@ -41,9 +52,15 @@ public class PurchasesRepository implements IRepository, IFindByIDMethod<Purchas
                 .findByID(id);
     }
 
+    /**
+     * Вставляет новую запись о покупке в базу данных.
+     *
+     * @param purchasesModel объект {@link PurchasesModel}, содержащий данные о покупке.
+     * @throws InsertException если произошла ошибка при вставке данных.
+     */
     public void insert(PurchasesModel purchasesModel) throws InsertException {
-        final String sql = "INSERT INTO purchases (id, price,product_id, date, payment_type_id, purchase_status_id, user_id) " +
-                "VALUES (?, ?, ?, ?, ?,?,?)";
+        final String sql = "INSERT INTO purchases (id, price, product_id, date, payment_type_id, purchase_status_id, user_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
             var stmt = connection.prepareStatement(sql);
@@ -60,6 +77,12 @@ public class PurchasesRepository implements IRepository, IFindByIDMethod<Purchas
         }
     }
 
+    /**
+     * Обновляет статус покупки для возврата продукта.
+     *
+     * @param purchasesModel объект {@link PurchasesModel}, содержащий данные для обновления.
+     * @throws UpdateException если произошла ошибка при обновлении данных.
+     */
     public void returnProduct(PurchasesModel purchasesModel) throws UpdateException {
         final String sql = "UPDATE purchases SET " +
                 "purchase_status_id = ? " +
@@ -72,6 +95,7 @@ public class PurchasesRepository implements IRepository, IFindByIDMethod<Purchas
             stmt.setString(3, purchasesModel.getUserID());
             stmt.setString(4, purchasesModel.getProductID());
             stmt.setString(5, purchasesModel.getPurchaseStatusID());
+            stmt.execute();
         } catch (SQLException e) {
             throw new UpdateException(e.getMessage());
         }

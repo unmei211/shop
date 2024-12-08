@@ -1,16 +1,25 @@
 package omsu.softwareengineering.data.database.extractor.commands.models;
 
 import omsu.softwareengineering.data.database.extractor.commands.IExtractorCommand;
-import omsu.softwareengineering.model.price.PriceModel;
 import omsu.softwareengineering.model.purchases.PurchasesModel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+/**
+ * Реализация {@link IExtractorCommand}, которая извлекает данные для модели {@link PurchasesModel} из {@link ResultSet}.
+ * <p>Этот класс преобразует данные из {@link ResultSet} в объект {@link PurchasesModel}, который представляет собой информацию
+ * о покупке, включая ID покупки, продукт, пользователя, тип оплаты, дату и статус покупки, а также цену.</p>
+ */
 public class PurchasesExtractorCommand implements IExtractorCommand<PurchasesModel> {
     private ResultSet resultSet;
 
+    /**
+     * Выполняет извлечение данных из {@link ResultSet} и создает объект {@link PurchasesModel}.
+     *
+     * @return {@link PurchasesModel} с данными из {@link ResultSet}.
+     */
     @Override
     public PurchasesModel execute() {
         try {
@@ -24,10 +33,16 @@ public class PurchasesExtractorCommand implements IExtractorCommand<PurchasesMod
             resultSet.next();
             return new PurchasesModel(purchasesID, productID, userID, paymentTypeID, date, purchaseStatusID, price);
         } catch (SQLException e) {
-            return null;
+            return null; // Возвращается null, если произошла ошибка при извлечении данных
         }
     }
 
+    /**
+     * Настроить извлечение данных из переданного {@link ResultSet}.
+     *
+     * @param resultSet {@link ResultSet}, из которого будут извлечены данные для модели {@link PurchasesModel}.
+     * @return {@link PurchasesModel} с извлеченными данными.
+     */
     @Override
     public PurchasesModel setSetExecute(final ResultSet resultSet) {
         this.resultSet = resultSet;
