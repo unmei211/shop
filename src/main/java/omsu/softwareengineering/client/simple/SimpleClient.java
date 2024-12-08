@@ -78,5 +78,11 @@ public class SimpleClient implements IClient {
         productDiscountFacade.addDiscountForProduct("Keyboard", DiscountStrategyEnum.RandomRange.name());
 
         purchasesFacade.buy("Keyboard");
+        purchasesFacade.returnProduct("Keyboard");
+
+        purchasesFacade.buyProducts(
+                ProductBuyTransfer.builder().productName("Keyboard").count(5L).build(),
+                ProductBuyTransfer.builder().productName("Computer").count(10L).build()
+        );
     }
 }

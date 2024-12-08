@@ -59,4 +59,21 @@ public class PurchasesRepository implements IRepository, IFindByIDMethod<Purchas
             throw new InsertException(e.getMessage());
         }
     }
+
+    public void returnProduct(PurchasesModel purchasesModel) throws UpdateException {
+        final String sql = "UPDATE purchases SET " +
+                "purchase_status_id = ? " +
+                "WHERE payment_type_id = ? AND user_id = ? AND product_id = ? AND NOT purchase_status_id = ?";
+
+        try {
+            var stmt = connection.prepareStatement(sql);
+            stmt.setString(1, purchasesModel.getPurchaseStatusID());
+            stmt.setString(2, purchasesModel.getPaymentTypeID());
+            stmt.setString(3, purchasesModel.getUserID());
+            stmt.setString(4, purchasesModel.getProductID());
+            stmt.setString(5, purchasesModel.getPurchaseStatusID());
+        } catch (SQLException e) {
+            throw new UpdateException(e.getMessage());
+        }
+    }
 }

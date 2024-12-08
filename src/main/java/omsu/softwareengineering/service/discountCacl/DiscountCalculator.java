@@ -12,7 +12,7 @@ public class DiscountCalculator {
 
     public DiscountCalculator() {
         discountMap.put(null, (price) -> price);
-        discountMap.put(DiscountStrategyEnum.Percentage.name(), (price) -> (long) (price * 0.8f));
+        discountMap.put(DiscountStrategyEnum.RandomRange.name(), (price) -> (long) (price * 0.8f));
         discountMap.put(DiscountStrategyEnum.Percentage.name(), (price) -> (long) (price * 0.9f));
         discountMap.put(DiscountStrategyEnum.Quantitative.name(), (price) -> (long) (price * 0.6f));
 

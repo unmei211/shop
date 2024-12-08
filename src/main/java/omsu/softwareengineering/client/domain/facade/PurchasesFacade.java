@@ -11,6 +11,8 @@ import omsu.softwareengineering.service.*;
 import omsu.softwareengineering.service.discountCacl.DiscountCalculator;
 import omsu.softwareengineering.util.ioc.IOC;
 
+import java.util.Arrays;
+
 @Slf4j
 public class PurchasesFacade implements IFacade {
     private ProductService productApi = IOC.get(ProductService.class);
@@ -33,7 +35,7 @@ public class PurchasesFacade implements IFacade {
         DiscountStrategyModel discountStrategyModel = null;
         String method = null;
         try {
-            productDiscountModel = productDiscountApi.getProductDiscountByProductID(model.getName());
+            productDiscountModel = productDiscountApi.getProductDiscountByProductID(model.getId());
             discountModel = discountApi.getDiscountByID(productDiscountModel.getDiscountID());
             discountStrategyModel = discountStrategyApi.getStrategyById(discountModel.getDiscountStrategyID());
             method = discountStrategyModel.getMethod();
@@ -44,5 +46,16 @@ public class PurchasesFacade implements IFacade {
         Long price = priceApi.getProductPriceByProductName(productName);
         price = discountCalculator.calc(method, price);
         purchasesApi.buy(model.getId(), "c4e7ed1b-8ab6-44b4-8dd0-1c57f3fad809", PaymentTypeEnum.Cash.name(), price);
+    }
+
+    public void buyProducts(ProductBuyTransfer ...buyTransfers) {
+        var buyer = new ProductBuyer();
+        Arrays.stream(buyTransfers).forEach((transfer) -> {
+            buyer.buyProduct(transfer, this::buy);
+        });
+    }
+
+    public void returnProduct(String productName) {
+        purchasesApi.returnProduct(productName, "c4e7ed1b-8ab6-44b4-8dd0-1c57f3fad809", PaymentTypeEnum.Cash.name());
     }
 }
