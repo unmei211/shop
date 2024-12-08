@@ -1,0 +1,839 @@
+@startuml
+    interface IClient {
+    +connectApi()
+    +handle()
+}
+
+class SimpleClient {
+    -CategoryService categoryApi
+    -ProductService productApi
+    -PriceService priceApi
+    -PaymentTypeService paymentTypeApi
+    -UserService userApi
+    -PurchaseStatusService purchaseStatusApi
+    -DiscountStrategyService discountStrategyApi
+    -DiscountService discountApi
+    -ProductDiscountService productDiscountApi
+    -PurchasesService purchasesApi
+    -ProductFacade productFacade
+    -UserFacade userFacade
+    -PriceFacade priceFacade
+    -DiscountFacade discountFacade
+    -ProductDiscountFacade productDiscountFacade
+    -PurchasesFacade purchasesFacade
+    +connectApi()
+    +handle()
+}
+
+SimpleClient -down-> ProductFacade
+SimpleClient -down-> UserFacade
+SimpleClient -down-> PriceFacade
+SimpleClient -down-> DiscountFacade
+SimpleClient -down-> ProductDiscountFacade
+SimpleClient -down-> PurchasesFacade
+
+ProductFacade -down-> CategoryService
+ProductFacade -down-> ProductService
+UserFacade -down-> UserService
+PriceFacade -down-> PriceService
+PriceFacade -down-> ProductService
+DiscountFacade -down-> DiscountStrategyService
+DiscountFacade -down-> DiscountService
+ProductDiscountFacade -down-> ProductService
+ProductDiscountFacade -down-> DiscountStrategyService
+ProductDiscountFacade -down-> ProductDiscountService
+PurchasesFacade -down-> ProductService
+PurchasesFacade -down-> DiscountStrategyService
+PurchasesFacade -down-> DiscountService
+PurchasesFacade -down-> ProductDiscountService
+PurchasesFacade -down-> PriceService
+PurchasesFacade -down-> DiscountCalculator
+PurchasesFacade -down-> PurchasesService
+
+interface IFacade {
+}
+
+class DiscountFacade {
+    -DiscountStrategyService discountStrategyApi
+    -DiscountService discountApi
+    +initDiscount(strategyMethodName: String, description: String)
+}
+
+DiscountFacade -down-> DiscountStrategyService
+DiscountFacade -down-> DiscountService
+
+DiscountStrategyService -down-> DiscountStrategyModel
+DiscountService -down-> DiscountModel
+
+class PriceFacade {
+    -PriceService priceApi
+    -ProductService productApi
+    +changePriceByProductName(name: String, price: Long)
+    +getPriceByProductName(name: String): Long
+}
+
+PriceFacade -down-> PriceService
+PriceFacade -down-> ProductService
+
+PriceService -down-> PriceModel
+ProductService -down-> ProductModel
+
+class ProductBuyer {
+    +buyProduct(productBuyTransfer: ProductBuyTransfer, buyMethod: Consumer<String>)
+}
+
+class ProductBuyTransfer {
+    -productName: String
+    -count: Long
+    +getProductName(): String
+    +getCount(): Long
+}
+
+ProductBuyer --> ProductBuyTransfer
+
+class ProductDiscountFacade {
+    -productApi: ProductService
+    -discountStrategyApi: DiscountStrategyService
+    -discountApi: DiscountService
+    -productDiscountApi: ProductDiscountService
+    +addDiscountForProduct(productName: String, strategyMethodName: String)
+}
+
+ProductDiscountFacade --> ProductService
+ProductDiscountFacade --> DiscountStrategyService
+ProductDiscountFacade --> DiscountService
+ProductDiscountFacade --> ProductDiscountService
+
+class ProductFacade {
+    -categoryApi: CategoryService
+    -productApi: ProductService
+    +ProductFacade()
+    +addProduct(categoryName: String, productName: String, amount: Long): void
+    +deleteProduct(productName: String): void
+}
+
+class PurchasesFacade {
+    -productApi: ProductService
+    -discountStrategyApi: DiscountStrategyService
+    -discountApi: DiscountService
+    -productDiscountApi: ProductDiscountService
+    -priceApi: PriceService
+    -discountCalculator: DiscountCalculator
+    -purchasesApi: PurchasesService
+    +PurchasesFacade()
+    +buy(productName: String): void
+    +buyProducts(buyTransfers: ProductBuyTransfer[]): void
+    +returnProduct(productName: String): void
+}
+
+PurchasesFacade -- ProductService : uses
+PurchasesFacade -- DiscountStrategyService : uses
+PurchasesFacade -- DiscountService : uses
+PurchasesFacade -- ProductDiscountService : uses
+PurchasesFacade -- PriceService : uses
+PurchasesFacade -- DiscountCalculator : uses
+PurchasesFacade -- PurchasesService : uses
+ProductDiscountService -- DiscountService : uses
+ProductService -- ProductModel : returns
+PriceService -- PriceModel : returns
+DiscountService -- DiscountModel : returns
+DiscountStrategyService -- DiscountStrategyModel : returns
+ProductDiscountService -- ProductDiscountModel : returns
+PurchasesService -- ProductModel : uses
+PurchasesFacade -- ProductBuyer : uses
+
+class UserFacade {
+    -userApi: UserService
+    +UserFacade()
+    +addUser(name: String, email: String): void
+}
+
+class Extractor {
+    -fac: IAbstractFactory
+    +Extractor()
+    +<T> one(clazz: Class<T>, stmt: PreparedStatement): T
+}
+
+interface IExtractorCommand<T> {
+    +execute(): T
+    +setSetExecute(resultSet: ResultSet): T
+}
+
+interface CommandCreator<T> {
+    +create(): T
+}
+
+class ExtractorCommandsFactory {
+    -commands: HashMap<Class<?>, CommandCreator<? extends IExtractorCommand<?>>>
+    +ExtractorCommandsFactory()
+    +<T, D> create(clazz: Class<T>): Optional<D>
+}
+
+class CategoryModel
+class DiscountModel
+class DiscountStrategyModel
+class PaymentTypeModel
+class PriceModel
+class ProductModel
+class ProductDiscountModel
+class PurchaseStatusModel
+class UserModel
+
+Extractor --> IAbstractFactory : uses
+Extractor --> IExtractorCommand : uses
+ExtractorCommandsFactory --> CommandCreator : manages
+ExtractorCommandsFactory --> IExtractorCommand : creates
+ExtractorCommandsFactory ..> CategoryModel
+ExtractorCommandsFactory ..> DiscountModel
+ExtractorCommandsFactory ..> DiscountStrategyModel
+ExtractorCommandsFactory ..> PaymentTypeModel
+ExtractorCommandsFactory ..> PriceModel
+ExtractorCommandsFactory ..> ProductModel
+ExtractorCommandsFactory ..> ProductDiscountModel
+ExtractorCommandsFactory ..> PurchaseStatusModel
+ExtractorCommandsFactory ..> UserModel
+CommandCreator --> IExtractorCommand : creates
+
+class CategoryExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): CategoryModel
+    +setSetExecute(resultSet: ResultSet): CategoryModel
+}
+
+class DiscountExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): DiscountModel
+    +setSetExecute(resultSet: ResultSet): DiscountModel
+}
+
+CategoryExtractorCommand --> CategoryModel : extracts
+DiscountExtractorCommand --> DiscountModel : extracts
+CategoryExtractorCommand ..|> IExtractorCommand
+DiscountExtractorCommand ..|> IExtractorCommand
+
+class DiscountStrategyExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): DiscountStrategyModel
+    +setSetExecute(resultSet: ResultSet): DiscountStrategyModel
+}
+
+class PaymentTypeExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): PaymentTypeModel
+    +setSetExecute(resultSet: ResultSet): PaymentTypeModel
+}
+
+DiscountStrategyExtractorCommand --> DiscountStrategyModel : extracts
+PaymentTypeExtractorCommand --> PaymentTypeModel : extracts
+DiscountStrategyExtractorCommand ..|> IExtractorCommand
+PaymentTypeExtractorCommand ..|> IExtractorCommand
+
+class PriceExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): PriceModel
+    +setSetExecute(resultSet: ResultSet): PriceModel
+}
+
+class ProductDiscountExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): ProductDiscountModel
+    +setSetExecute(resultSet: ResultSet): ProductDiscountModel
+}
+PriceExtractorCommand ..|> IExtractorCommand
+ProductDiscountExtractorCommand ..|> IExtractorCommand
+PriceExtractorCommand --> PriceModel : extracts
+ProductDiscountExtractorCommand --> ProductDiscountModel : extracts
+
+class ProductExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): ProductModel
+    +setSetExecute(resultSet: ResultSet): ProductModel
+}
+ProductExtractorCommand ..|> IExtractorCommand
+
+class PurchasesExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): PurchasesModel
+    +setSetExecute(resultSet: ResultSet): PurchasesModel
+}
+PurchasesExtractorCommand --> PurchasesModel : extracts
+PurchasesExtractorCommand ..|> IExtractorCommand
+
+class PurchaseStatusExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): PurchaseStatusModel
+    +setSetExecute(resultSet: ResultSet): PurchaseStatusModel
+}
+
+class UserExtractorCommand {
+    -resultSet: ResultSet
+    +execute(): UserModel
+    +setSetExecute(resultSet: ResultSet): UserModel
+}
+PurchaseStatusExtractorCommand ..|> IExtractorCommand
+UserExtractorCommand ..|> IExtractorCommand
+PurchasesExtractorCommand --> PurchasesModel : extracts
+PurchaseStatusExtractorCommand --> PurchaseStatusModel : extracts
+
+class FindByMethodWrapper {
+    -connection: Connection
+    -extractor: Extractor
+    +<T, A> findBy(fieldName: String, value: A, modelClazz: Class<T>, table: String): T
+}
+
+class FindByDisableableMethodWrapper {
+    -connection: Connection
+    -extractor: Extractor
+    +<T, A> findBy(fieldName: String, value: A, modelClazz: Class<T>, table: String): T
+}
+
+class FindByIDMethodWrapper<T> {
+    -table: String
+    -connection: Connection
+    -extractor: Extractor
+    -clazz: Class<T>
+    +findByID(id: String): T
+}
+
+class MethodWrapperFactory {
+    -connection: Connection
+    -extractor: Extractor
+    +<T> findByIDMethodWrapper(table: String, clazz: Class<T>): FindByIDMethodWrapper<T>
+    +<T, A> findBy(fieldName: String, value: A, modelClazz: Class<T>, table: String): T
+    +<T, A> findByDisableable(fieldName: String, value: A, modelClazz: Class<T>, table: String): T
+}
+
+FindByMethodWrapper --> Extractor : uses
+FindByDisableableMethodWrapper --> Extractor : uses
+FindByIDMethodWrapper --> Extractor : uses
+FindByIDMethodWrapper --> IFindByIDMethod : implements
+MethodWrapperFactory --> FindByMethodWrapper : creates
+MethodWrapperFactory --> FindByDisableableMethodWrapper : creates
+MethodWrapperFactory --> FindByIDMethodWrapper : creates
+MethodWrapperFactory --> IOC : uses
+FindByMethodWrapper ..> FindException : throws
+FindByDisableableMethodWrapper ..> FindException : throws
+FindByIDMethodWrapper ..> FindException : throws
+
+class IConnectionFactory {
+    +create(): Optional<Connection>
+}
+
+interface IConnector {
+    +getConnection(): Optional<Connection>
+}
+
+class PostgresConnection {
+    -pool: Connection
+    -url: String
+    -user: String
+    -password: String
+    +getConnection(): Optional<Connection>
+}
+
+IConnectionFactory --> PostgresConnection : creates
+PostgresConnection --> IConnector : implements
+PostgresConnection ..> Connection : uses
+
+interface IRepository {
+}
+
+interface IFindByIDMethod<T> {
+    +findByID(id: String): T throws FindException
+}
+
+class CategoryRepository implements IRepository, IFindByIDMethod<CategoryModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -table: String
+    +CategoryRepository()
+    +findByID(id: String): CategoryModel throws FindException
+    +findByName(name: String): CategoryModel throws FindException
+    +insert(category: CategoryModel): void throws InsertException
+}
+
+CategoryRepository --> "1" Extractor
+CategoryRepository --> "1" MethodWrapperFactory
+CategoryRepository --> "1" Connection
+CategoryRepository --> "1" CategoryModel
+
+class DiscountRepository implements IRepository, IFindByIDMethod<DiscountModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -targetTable: String
+    +DiscountRepository()
+    +findByID(id: String): DiscountModel throws FindException
+    +findByDiscountStrategyID(discountStrategyID: String): DiscountModel throws FindException
+    +insert(model: DiscountModel): void throws InsertException
+}
+
+DiscountRepository --> "1" Extractor
+DiscountRepository --> "1" MethodWrapperFactory
+DiscountRepository --> "1" Connection
+DiscountRepository --> "1" DiscountModel
+
+class DiscountStrategyRepository implements IRepository, IFindByIDMethod<DiscountStrategyModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -targetTable: String
+    +DiscountStrategyRepository()
+    +findByID(id: String): DiscountStrategyModel throws FindException
+    +findByMethod(method: String): DiscountStrategyModel throws FindException
+    +insert(model: DiscountStrategyModel): void throws InsertException
+}
+
+DiscountStrategyRepository --> "1" Extractor
+DiscountStrategyRepository --> "1" MethodWrapperFactory
+DiscountStrategyRepository --> "1" Connection
+DiscountStrategyRepository --> "1" DiscountStrategyModel
+
+
+class PaymentTypeRepository implements IRepository, IFindByIDMethod<PaymentTypeModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -targetTable: String
+    +PaymentTypeRepository()
+    +findByID(id: String): PaymentTypeModel throws FindException
+    +findByType(type: String): PaymentTypeModel throws FindException
+    +insert(model: PaymentTypeModel): void throws InsertException
+}
+
+PaymentTypeRepository --> "1" Extractor
+PaymentTypeRepository --> "1" MethodWrapperFactory
+PaymentTypeRepository --> "1" Connection
+PaymentTypeRepository --> "1" PaymentTypeModel
+
+class PriceRepository implements IRepository, IFindByIDMethod<PriceModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -table: String
+    +PriceRepository()
+    +findByID(id: String): PriceModel throws FindException
+    +findByProductID(productID: String): PriceModel throws FindException
+    +insert(priceModel: PriceModel): void throws InsertException
+    +update(priceModel: PriceModel): void throws UpdateException
+    +upsert(model: PriceModel): void throws UpdateException
+}
+
+PriceRepository --> "1" Extractor
+PriceRepository --> "1" MethodWrapperFactory
+PriceRepository --> "1" Connection
+PriceRepository --> "1" PriceModel
+
+class ProductRepository implements IRepository {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -table: String
+    +ProductRepository()
+    +findByID(id: String): ProductModel throws FindException
+    +findByName(name: String): ProductModel throws FindException
+    +deleteProductPrices(productID: String): void throws DeleteException
+    +deleteByID(id: String): void throws DeleteException
+    +insert(product: ProductModel): void throws InsertException
+}
+
+ProductRepository --> "1" Extractor
+ProductRepository --> "1" MethodWrapperFactory
+ProductRepository --> "1" Connection
+ProductRepository --> "1" ProductModel
+
+class ProductDiscountRepository implements IRepository, IFindByIDMethod<ProductDiscountModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -targetTable: String
+    +ProductDiscountRepository()
+    +findByID(id: String): ProductDiscountModel throws FindException
+    +findByProductID(productID: String): ProductDiscountModel throws FindException
+    +insert(model: ProductDiscountModel): void throws InsertException
+}
+
+ProductDiscountRepository --> "1" Extractor
+ProductDiscountRepository --> "1" MethodWrapperFactory
+ProductDiscountRepository --> "1" Connection
+ProductDiscountRepository --> "1" ProductDiscountModel
+
+class PurchasesRepository implements IRepository, IFindByIDMethod<PurchasesModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -targetTable: String
+    +PurchasesRepository()
+    +findByID(id: String): PurchasesModel throws FindException
+    +insert(purchasesModel: PurchasesModel): void throws InsertException
+    +returnProduct(purchasesModel: PurchasesModel): void throws UpdateException
+}
+
+PurchasesRepository --> "1" Extractor
+PurchasesRepository --> "1" MethodWrapperFactory
+PurchasesRepository --> "1" Connection
+PurchasesRepository --> "1" PurchasesModel
+
+class PurchaseStatusRepository implements IRepository, IFindByIDMethod<PurchaseStatusModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -table: String
+    +PurchaseStatusRepository()
+    +findByID(id: String): PurchaseStatusModel throws FindException
+    +findByStatus(status: String): PurchaseStatusModel throws FindException
+    +insert(model: PurchaseStatusModel): void throws InsertException
+}
+
+PurchaseStatusRepository --> "1" Extractor
+PurchaseStatusRepository --> "1" MethodWrapperFactory
+PurchaseStatusRepository --> "1" Connection
+PurchaseStatusRepository --> "1" PurchaseStatusModel
+
+class UserRepository implements IRepository, IFindByIDMethod<UserModel> {
+    -connection: Connection
+    -extractor: Extractor
+    -method: MethodWrapperFactory
+    -targetTable: String
+    +UserRepository()
+    +findByID(id: String): UserModel throws FindException
+    +findByEmail(email: String): UserModel throws FindException
+    +findByName(name: String): UserModel throws FindException
+    +insert(userModel: UserModel): void throws InsertException
+}
+
+UserRepository --> "1" Extractor
+UserRepository --> "1" MethodWrapperFactory
+UserRepository --> "1" Connection
+UserRepository --> "1" UserModel
+
+class Application {
+    -connection: Connection
+    +buildConnection(connectionFactory: IFactory<Connection>): Connection throws IConnectionFactoryException
+    +toolsConfiguration(): void
+    +repositoryConfiguration(): void
+    +serviceConfiguration(): void
+    +iocConfiguration(): void
+    +run(): void
+}
+
+Application --> "1" IConnectionFactory
+Application --> "1" ExtractorCommandsFactory
+Application --> "1" Extractor
+Application --> "1" MethodWrapperFactory
+Application --> "1" CategoryRepository
+Application --> "1" ProductRepository
+Application --> "1" PriceRepository
+Application --> "1" PaymentTypeRepository
+Application --> "1" UserRepository
+Application --> "1" PurchaseStatusRepository
+Application --> "1" DiscountStrategyRepository
+Application --> "1" DiscountRepository
+Application --> "1" ProductDiscountRepository
+Application --> "1" PurchasesRepository
+Application --> "1" CategoryService
+Application --> "1" ProductService
+Application --> "1" PriceService
+Application --> "1" PaymentTypeService
+Application --> "1" UserService
+Application --> "1" PurchaseStatusService
+Application --> "1" DiscountStrategyService
+Application --> "1" DiscountService
+Application --> "1" ProductDiscountService
+Application --> "1" PurchasesService
+Application --> "1" IClient
+
+SimpleClient -|> IClient
+
+interface ICommand {
+    +execute() : void
+}
+
+interface IResultingCommand<T> {
+    +execute() : T
+}
+
+interface IAbstractFactory {
+    +<T, D> create(clazz: Class<T>) : Optional<D>
+}
+
+interface IFactory<T> {
+    +create() : Optional<T>
+}
+
+class IDGen {
+    +gen() : String
+}
+
+class IOC {
+    - static container : HashMap<String, Object>
+    + static register(key: String, value: Object) : void
+    + static register(value: Object) : void
+    + static get(key: String) : Object
+    + static get(obj: Object) : Object
+    + static get(clazz: Class<T>) : T
+}
+class CategoryService {
+    - categoryRepository : CategoryRepository
+    + CategoryService()
+    + getCategoryByID(id: String) : CategoryModel
+    + getCategoryByName(name: String) : CategoryModel
+    + upsertCategoryByName(name: String) : void
+}
+
+CategoryService "1" --> "1" CategoryRepository : uses
+CategoryService "1" --> "1" CategoryEnum : uses
+CategoryService "1" --> "1" CategoryModel : uses
+
+class DiscountService {
+    - discountRepository : DiscountRepository
+    - discountStrategyRepository : DiscountStrategyRepository
+    + DiscountService()
+    + getDiscountByID(id: String) : DiscountModel
+    + getDiscountByStrategyID(strategyID: String) : DiscountModel
+    + initDiscount(discountModel: DiscountModel) : void
+}
+
+DiscountService "1" --> "1" DiscountRepository : uses
+DiscountService "1" --> "1" DiscountStrategyRepository : uses
+DiscountService "1" --> "1" DiscountModel : uses
+DiscountRepository "1" --> "1" DiscountModel : manages
+DiscountStrategyRepository "1" --> "1" DiscountStrategyModel : manages
+
+class DiscountStrategyService {
+    - discountStrategyRepository : DiscountStrategyRepository
+    + DiscountStrategyService()
+    + getStrategyByName(methodName: String) : DiscountStrategyModel
+    + getStrategyById(id: String) : DiscountStrategyModel
+    + insertStrategy(discountStrategyModel: DiscountStrategyModel) : void
+    + getProductByID(id: String) : DiscountStrategyModel
+    + getDiscountStrategyModelByMethod(method: String) : DiscountStrategyModel
+}
+
+
+DiscountStrategyService "1" --> "1" DiscountStrategyRepository : uses
+DiscountStrategyService "1" --> "1" DiscountStrategyModel : manages
+DiscountStrategyRepository "1" --> "1" DiscountStrategyModel : manages
+DiscountStrategyService "1" --> "1" DiscountStrategyEnum : uses
+
+class PaymentTypeService {
+    - paymentTypeRepository : PaymentTypeRepository
+    + PaymentTypeService()
+    + getPaymentTypeByID(id: String) : PaymentTypeModel
+    + getPaymentTypeByType(type: String) : PaymentTypeModel
+    + insertByType(type: String) : void
+}
+
+PaymentTypeService "1" --> "1" PaymentTypeRepository : uses
+PaymentTypeService "1" --> "1" PaymentTypeModel : manages
+PaymentTypeRepository "1" --> "1" PaymentTypeModel : manages
+PaymentTypeService "1" --> "1" PaymentTypeEnum : uses
+
+class PriceService {
+    - productRepository : ProductRepository
+    - priceRepository : PriceRepository
+    + PriceService()
+    + getProductByID(id: String) : ProductModel
+    + getProductPriceByProductName(productName: String) : Long
+    + deleteProductPricesByProductName(name: String) : void
+    + changePrice(priceModel: PriceModel) : void
+}
+
+PriceService "1" --> "1" ProductRepository : uses
+PriceService "1" --> "1" PriceRepository : uses
+ProductRepository "1" --> "1" ProductModel : manages
+PriceRepository "1" --> "1" PriceModel : manages
+PriceService "1" --> "1" ProductModel : manages
+PriceService "1" --> "1" PriceModel : manages
+
+class ProductDiscountService {
+    - productDiscountRepository : ProductDiscountRepository
+    - productRepository : ProductRepository
+    - discountRepository : DiscountRepository
+    + ProductDiscountService()
+    + getProductDiscountByID(id: String) : ProductDiscountModel
+    + getProductDiscountByProductID(productID: String) : ProductDiscountModel
+    + bundleProductViaDiscount(productName: String, discountStrategyID: String) : void
+}
+
+ProductDiscountService "1" --> "1" ProductDiscountRepository : uses
+ProductDiscountService "1" --> "1" ProductRepository : uses
+ProductDiscountService "1" --> "1" DiscountRepository : uses
+ProductDiscountRepository "1" --> "1" ProductDiscountModel : manages
+ProductRepository "1" --> "1" ProductModel : manages
+DiscountRepository "1" --> "1" DiscountModel : manages
+ProductDiscountService "1" --> "1" ProductDiscountModel : manages
+
+ProductService "1" --> "1" ProductRepository : uses
+ProductService "1" --> "1" CategoryRepository : uses
+ProductRepository "1" --> "1" ProductModel : manages
+CategoryRepository "1" --> "1" CategoryModel : manages
+ProductService "1" --> "1" ProductModel : manages
+
+class ProductService {
+    - productRepository : ProductRepository
+    - categoryRepository : CategoryRepository
+    + ProductService()
+    + getProductByID(id: String) : ProductModel
+    + getProductByName(name: String) : ProductModel
+    + upsertProduct(productModel: ProductModel) : void
+    + deleteProductByName(productName: String) : void
+}
+
+class PurchasesService {
+    - purchasesRepository : PurchasesRepository
+    - paymentTypeRepository : PaymentTypeRepository
+    - purchaseStatusRepository : PurchaseStatusRepository
+    - productRepository : ProductRepository
+    + PurchasesService()
+    + buy(productId: String, userId: String, paymentType: String, price: Long) : void
+    + returnProduct(productName: String, userId: String, paymentType: String) : void
+}
+
+PurchasesService "1" --> "1" PurchasesRepository : uses
+PurchasesService "1" --> "1" PaymentTypeRepository : uses
+PurchasesService "1" --> "1" PurchaseStatusRepository : uses
+PurchasesService "1" --> "1" ProductRepository : uses
+PurchasesRepository "1" --> "1" PurchasesModel : manages
+PaymentTypeRepository "1" --> "1" PaymentTypeModel : manages
+PurchaseStatusRepository "1" --> "1" PurchaseStatusModel : manages
+ProductRepository "1" --> "1" ProductModel : manages
+PurchasesService "1" --> "1" PurchasesModel : manages
+
+class PurchaseStatusService {
+    - purchaseStatusRepository : PurchaseStatusRepository
+    + PurchaseStatusService()
+    + getStatusByID(id: String) : PurchaseStatusModel
+    + insertByType(purchaseStatusModel: PurchaseStatusModel) : void
+}
+
+PurchaseStatusService "1" --> "1" PurchaseStatusRepository : uses
+PurchaseStatusService "1" --> "1" PurchaseStatusModel : manages
+
+class UserService {
+    - userRepository : UserRepository
+    + UserService()
+    + getUserByID(id: String) : UserModel
+    + createUser(name: String, email: String) : void
+}
+
+
+UserService "1" --> "1" UserRepository : uses
+UserService "1" --> "1" UserModel : manages
+
+' Класс для категории
+class CategoryModel {
+    - id : String
+    - name : String
+    + CategoryModel(id: String, name: String)
+}
+
+enum CategoryEnum {
+    tech
+    material
+    sport
+}
+
+class DiscountModel {
+    - id : String
+    - description : String
+    - startDate : Timestamp
+    - endDate : Timestamp
+    - enabled : Boolean
+    - discountStrategyID : String
+    + DiscountModel(id: String, description: String, startDate: Timestamp, endDate: Timestamp, enabled: Boolean, discountStrategyID: String)
+}
+
+enum DiscountStrategyEnum {
+    Percentage
+    RandomRange
+    Quantitative
+}
+
+class DiscountStrategyModel {
+    - id : String
+    - description : String
+    - method : String
+    + DiscountStrategyModel(id: String, description: String, method: String)
+}
+
+CategoryEnum -|> CategoryModel : represents
+DiscountStrategyEnum -|> DiscountStrategyModel : represents
+
+enum PaymentTypeEnum {
+    Bank
+    Cash
+    Bitcoin
+}
+
+class PaymentTypeModel {
+    - id : String
+    - type : String
+    + PaymentTypeModel(id: String, type: String)
+}
+
+class PriceModel {
+    - id : String
+    - price : Long
+    - startDate : Timestamp
+    - endDate : Timestamp
+    - productID : String
+    + PriceModel(id: String, price: Long, startDate: Timestamp, endDate: Timestamp, productID: String)
+}
+
+class ProductModel {
+    - id : String
+    - amount : Long
+    - categoryID : String
+    - name : String
+    - deleted : Boolean
+    + ProductModel(id: String, amount: Long, categoryID: String, name: String, deleted: Boolean)
+}
+
+class ProductDiscountModel {
+    - id : String
+    - productID : String
+    - discountID : String
+    + ProductDiscountModel(id: String, productID: String, discountID: String)
+}
+
+PaymentTypeEnum -|> PaymentTypeModel : represents
+ProductModel "1" *-- "*" PriceModel : contains
+ProductModel "1" *-- "*" ProductDiscountModel : applies
+
+enum PurchaseStatusEnum {
+    Canceled
+    Completed
+}
+
+class PurchaseStatusModel {
+    - id : String
+    - status : String
+    + PurchaseStatusModel(id: String, status: String)
+}
+
+class PurchasesModel {
+    - id : String
+    - productID : String
+    - userID : String
+    - paymentTypeID : String
+    - date : Timestamp
+    - purchaseStatusID : String
+    - price : Long
+    + PurchasesModel(id: String, productID: String, userID: String, paymentTypeID: String, date: Timestamp, purchaseStatusID: String, price: Long)
+}
+
+class UserModel {
+    - id : String
+    - name : String
+    - email : String
+    + UserModel(id: String, name: String, email: String)
+}
+
+PurchaseStatusEnum -|> PurchaseStatusModel : represents
+PurchasesModel "1" *-- "1" PurchaseStatusModel : has status
+PurchasesModel "1" *-- "1" UserModel : belongs to
+
+@enduml
+
